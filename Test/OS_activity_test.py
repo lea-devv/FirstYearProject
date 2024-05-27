@@ -1,24 +1,25 @@
 import datetime
 import os
 
-class Recent_Files:
-    def __init__(self, dirpath) -> None:
-        self.dirpath = dirpath
+# Initialize an empty list to hold tuples of (filename, modification time)
+files_with_dates = []
 
-    def get_recent_files(self):
-        files_with_dates = []
+for dirpath, dirnames, filenames in os.walk(r"C:\Users\lauej\Downloads"):
+    for filename in filenames:
+        filepath = os.path.join(dirpath, filename)
+        try:
+            # Get the file modification timestamp
+            m_time = os.path.getmtime(filepath)
+            # Convert timestamp into DateTime object
+            dt_m = datetime.datetime.fromtimestamp(m_time)
+            # Append the filename and its modification time as a tuple
+            files_with_dates.append((filename, dt_m))
+        except FileNotFoundError:
+            print(f"File not found: {filepath}")
 
-        for dirpath, dirnames, filenames in os.walk(self.dirpath):
-            for filename in filenames:
-                filepath = os.path.join(dirpath, filename)
-                try:
-                    m_time = os.path.getmtime(filepath)
-                    dt_m = datetime.datetime.fromtimestamp(m_time)
-                    files_with_dates.append((filename, dt_m))
-                except FileNotFoundError:
-                    print(f"File not found: {filepath}")
+# Sort the list of tuples by the modification time
+files_with_dates.sort(key=lambda x: x[1], reverse=True)
 
-        files_with_dates.sort(key=lambda x: x[1], reverse=True)
-
-        #dt_m for modified date, filename for filename
-        return files_with_dates
+# Print sorted filenames along with their modification dates
+for filename, dt_m in files_with_dates[:10]:
+    print(f'Modified on: {dt_m} for file: {filename}')
