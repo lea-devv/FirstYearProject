@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Recently Accessed Files</title>
+</head>
+<body>
+    
+    <style>
+        .recent-files-box {
+             position: fixed;
+             bottom: 20px;
+             left: 20px;
+             width: 800px;
+             border: 1px solid #ccc;
+             padding: 10px;
+             background-color: #f9f9f9;
+             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+         }
+         .recent-files-box ul li {
+            font-size: 25px; 
+        }
+        .recent-files-box h3 {
+            font-size: 25px; 
+        }
+            </style>
+     <div class="recent-files-box">
+        <h3>Recent Files</h3>
+        <ul>
+            {% for file in files %}
+                <li>{{ file }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
