@@ -3,21 +3,21 @@ import os
 
 class Recent_Files:
     def __init__(self, dirpath, amount):
+        global dir_info
         self.dirpath = dirpath
         self.range_amount = amount
-
+        dir_info = os.walk(self.dirpath)
+   
     def get_recent_files(self):
         file_info = []
         file_list = []
-        print(self.dirpath)
-        dir_info = os.walk(self.dirpath)
 
         for dirpath, dirnames, filenames in dir_info:
             for filename in filenames:
                 filepath = os.path.join(dirpath, filename)
                 try:
                     m_time = os.path.getmtime(filepath)
-                    dt_m = datetime.datetime.fromtimestamp(m_time)
+                    dt_m = datetime.datetime.fromtimestamp(m_time).replace(microsecond=0)
                     file_info.append((filename, dt_m))
                 except FileNotFoundError:
                     print(f"File not found: {filepath}")
@@ -29,4 +29,14 @@ class Recent_Files:
             file_list.append(tupple)
         
         return file_list
+
+
+    def changes_by_date():
+        current_date = datetime.date.today()
+        print(current_date)
+
+Recent_Files.changes_by_date()
+
+        
+
 
