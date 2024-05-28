@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<meta http-equiv="refresh" content="30">
 <head>
     <meta charset="UTF-8">
     <title>Recently Accessed Files</title>
@@ -23,8 +24,8 @@
         .recent-files-box h3 {
             font-size: 25px; 
         }
-            </style>
-     <div class="recent-files-box">
+    </style>
+    <div class="recent-files-box">
         <h3>Recent Files</h3>
         <ul>
             {% for file in files %}
@@ -32,5 +33,7 @@
             {% endfor %}
         </ul>
     </div>
+    <img class = "img-fluid float-left" src='data:image/png;base64,{{file_changes}}'/>
+
 </body>
 </html>

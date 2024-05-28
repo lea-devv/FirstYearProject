@@ -31,35 +31,30 @@ class Recent_Files:
     
     def plot_file_changes(self):
         file_changes = self.get_recent_files()
-        days = list(file_changes.keys())
-        counts = list(file_changes.values())
-
-        plt.bar(days, counts)
-        plt.xlabel('Date')
-        plt.ylabel('Number of Files Changed')
-        plt.title('Files Changed Over Time')
-        plt.xticks(rotation=45)
-        plt.tight_layout()
-        plt.show()
-
+        days = sorted(file_changes.keys())  # Sort dates to ensure chronological order
+        counts = []
+        total_changes = 0
+        for day in days:
+            total_changes += file_changes[day]
+            counts.append(total_changes)
         fig = Figure()
         fig.subplots_adjust(bottom=0.3)
         ax = fig.subplots()
         ax.tick_params(axis='x', which='both', rotation=30)
         ax.set_facecolor("#fff")
         ax.plot(days, counts)
-        ax.xaxis.set_major_locator(ticker.MaxNLocator(nbins=10, prune='both'))
-        ax.set_title('Humidity')
-        ax.set_xlabel("Timestamp")
-        ax.set_ylabel("Percent")
+        ax.xaxis.set_major_locator(ticker.MaxNLocator(nbins=5, prune='both'))
+        ax.set_title('Changes pr. day')
+        ax.set_xlabel("Date")
+        ax.set_ylabel("No. of files changed")
         buf = BytesIO()
         fig.savefig(buf, format="png")
         data = base64.b64encode(buf.getbuffer()).decode("ascii")
         return data
         
 
-recent_files = Recent_Files("C:/Users/lauej/Downloads/", 10)
-recent_files.plot_file_changes()
+#recent_files = Recent_Files("C:/Users/lauej/Downloads/", 10)
+#recent_files.plot_file_changes()
 
         
 
