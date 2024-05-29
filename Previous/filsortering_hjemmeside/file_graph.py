@@ -53,8 +53,8 @@ class Recent_Files:
         return data
         
 
-#recent_files = Recent_Files("C:/Users/lauej/Downloads/", 10)
-#recent_files.plot_file_changes()
+recent_files = Recent_Files("C:/Users/lauej/Downloads/", 10)
+recent_files.plot_file_changes()
 
         
 
