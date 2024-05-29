@@ -19,7 +19,8 @@ class Daily_Changes:
             print(self.db_directory)
             conn = sqlite3.connect(self.db_directory) 
             cur = conn.cursor()
-            cur.execute("""CREATE TABLE IF NOT EXISTS daily_change_count (date_today TEXT PRIMARY KEY, change_count INTEGER NOT NULL);""")
+            cur.execute("""CREATE TABLE IF NOT EXISTS daily_change_count (date_today TEXT PRIMARY KEY, 
+                        change_count INTEGER NOT NULL, storage_used_today_gb REAL NOT NULL);""")
         except sqlite3.Error as sql_e:
             print(f"sqlite error occured: {sql_e}")
             conn.rollback()
@@ -33,6 +34,10 @@ class Daily_Changes:
         date_today = datetime.now().date().isoformat()
         self.setup_database()
         files_changed_today = 0
+        #Stored in bytes
+        storage_used_today_B = 0
+        storage_used_today_GB = 0
+
 
         for dirpath, dirnames, filenames in dir_temp:
             for filename in filenames:
@@ -40,19 +45,27 @@ class Daily_Changes:
                 try:
                     m_time = os.path.getmtime(filepath)
                     m_date = datetime.fromtimestamp(m_time).date().isoformat()
+                    file_size = os.path.getsize(filepath)
+                    storage_used_today_B += file_size
+
 
                     if m_date == date_today:
                         files_changed_today += 1
+                        storage_used_today_B += file_size
 
                 except FileNotFoundError:
                     print(f"File not found: {filepath}")
 
+        storage_used_today_GB = storage_used_today_B / (1024 * 1024 * 1024)
+        
+
         try:
             conn = sqlite3.connect(self.db_directory)
             cur = conn.cursor()
-            cur.execute("""INSERT INTO daily_change_count(date_today, change_count) VALUES(?, ?) 
+            print(date_today, files_changed_today, storage_used_today_GB, storage_used_today_B)
+            cur.execute("""INSERT INTO daily_change_count(date_today, change_count, storage_used_today_gb) VALUES(?, ?, ?) 
                         ON CONFLICT(date_today) DO UPDATE SET change_count=excluded.change_count""", 
-                        (date_today, files_changed_today))
+                        (date_today, files_changed_today, storage_used_today_GB))
             conn.commit()
             print(f"Logged {files_changed_today} files changed today\n")
 

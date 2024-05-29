@@ -11,6 +11,8 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.sqlite"
 app.config["SECRET_KEY"] = "grafisk_design"
 db = SQLAlchemy()
 
+directory_location = ("C:/Users/lauej/Downloads")
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 bcrypt = Bcrypt(app)
@@ -34,10 +36,10 @@ def home():
 
 @app.route("/index")
 def index():
-    recent_file_list = Recent_Files("C:/Users/Lau/Music/", 20)
+    recent_file_list = Recent_Files(directory_location, 10)
     files_returned = recent_file_list.list_recent_files()
 	
-    graph = Daily_Changes("C:/GitHub/FirstYearProject/Dashboard/database/daily_filechanges.sqlite", "C:/Users/lauej/Downloads", 7)
+    graph = Daily_Changes("C:/GitHub/FirstYearProject/Dashboard/database/daily_filechanges.sqlite", directory_location, 7)
     graph.log_changes()
     graph = graph.daily_changes_graph()
 
@@ -45,7 +47,7 @@ def index():
 
 @app.route("/storage")
 def storage():
-	pi_chart = storage_graph()
+	pi_chart = storage_graph(directory_location)
 	return render_template('storage.html', pi_chart = pi_chart)
 
 @app.route('/register', methods=["GET", "POST"])

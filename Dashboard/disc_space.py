@@ -6,13 +6,13 @@ import io
 
 #matplotlib.use('Agg')
 
-def storage_graph():
-    total, used, free = shutil.disk_usage("/")
+def storage_graph(directory):
+    total, used, free = shutil.disk_usage(directory)
     y = np.array([(used // (2**30)), (free // (2**30))])
     labels = ["Used GB", "Free GB"]
 
     fig =  Figure()
-    
+
     ax = fig.subplots()
     ax.pie(y, labels=labels, autopct=lambda p : '{:.1f} GB'.format(p * sum(y) / 100))
     ax.axis('equal')  
