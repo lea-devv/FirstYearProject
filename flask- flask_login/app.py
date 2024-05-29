@@ -41,8 +41,6 @@ def register():
 @app.route("/login", methods=["GET", "POST"])
 def login():
 	if request.method == "POST":
-		username = request.form.get("username")
-		password = request.form.get("password")
 		user = Users.query.filter_by(
 			username=request.form.get("username")).first()
 		if user is None:
