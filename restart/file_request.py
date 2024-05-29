@@ -9,16 +9,16 @@ import base64
 import uuid
 import os
 
+########################################################################################
 def setup_database():
     try:
         conn = sqlite3.connect("C:/Users/Lau/Documents/GitHub/FirstYearProject/restart/database/file_changes.db")  # Create or connect to the database
         cur = conn.cursor()
         cur.execute('''CREATE TABLE IF NOT EXISTS file_modifications
-                    (id TEXT PRIMARY KEY AUTOINCREMENT, 
+                    (id INTEGER PRIMARY KEY AUTOINCREMENT, 
                     path TEXT NOT NULL, 
                     modification_date TEXT NOT NULL 
                     )''')
-    #UNIQUE(path, modification_date)
     except sqlite3.Error as sql_e:
         print(f"sqlite error occured: {sql_e}")
         conn.rollback()
@@ -29,6 +29,9 @@ def setup_database():
 
 setup_database()
 
+########################################################################################
+
+
 class Recent_Files:
     def __init__(self, dirpath, amount):
         global dir_info
@@ -36,35 +39,73 @@ class Recent_Files:
         self.range_amount = amount
         dir_info = os.walk(self.dirpath)
     
-#sqlite3 file_changes.db "INSERT INTO file_modifications (path, modification_date, id) VALUES (?,?,?)", 
+    ####################################################################################
 
-    def get_recent_files(self):
+    def print_recent_files(self):
         file_info = []
         file_list = []
-        file_changes = defaultdict(int)
-
 
         for dirpath, dirnames, filenames in dir_info:
             for filename in filenames:
                 filepath = os.path.join(dirpath, filename)
-                print(str(filepath))
-                conn = sqlite3.connect("C:/Users/Lau/Documents/GitHub/FirstYearProject/restart/database/file_changes.db") 
-                cur = conn.cursor()
-                
                 try:
                     m_time = os.path.getmtime(filepath)
                     dt_m = datetime.datetime.fromtimestamp(m_time).replace(microsecond=0)
                     file_info.append((filename, dt_m))
                 except FileNotFoundError:
                     print(f"File not found: {filepath}")
-                
+        
+        file_info.sort(key=lambda x: x[1], reverse=True)
+
+        for filename, dt_m in file_info[:self.range_amount]:
+            tupple = (f'Modified on: {dt_m} for file: {filename}')
+            file_list.append(tupple)
+        
+        return file_list
+    
+    ####################################################################################
+    
+    def get_recent_files(self):
+        file_info = []
+        file_list = []
+        file_changes = defaultdict(int)
+
+        for dirpath, dirnames, filenames in dir_info:
+            for filename in filenames:
+                filepath = os.path.join(dirpath, filename)
                 try:
-                    m_time = os.path.getmtime(filepath)
-                    modification_date = datetime.datetime.fromtimestamp(m_time).date().isoformat()
-                    print(modification_date)
-                    print(filepath)
-                    cur.execute("""INSERT INTO file_modifications(path, modification_date) VALUES(?, ?)""", (filepath, modification_date))
-                    conn.commit()                    
+                    conn = sqlite3.connect("C:/Users/Lau/Documents/GitHub/FirstYearProject/restart/database/file_changes.db")
+                    cur = conn.cursor()
+                    print("Connected to database\n")
+                    
+                    try:
+                        m_time = os.path.getmtime(filepath)
+                        dt_m = datetime.datetime.fromtimestamp(m_time).replace(microsecond=0)
+                        file_info.append((filename, dt_m))
+                    
+                        m_time = os.path.getmtime(filepath)
+                        modification_date = datetime.datetime.fromtimestamp(m_time).date().isoformat()
+                        
+                        cur.execute("""SELECT * FROM file_modifications;""")
+                        data = cur.fetchall()
+                        if data == []:
+                            print("No data in database. Made first insert.")
+                            print(filepath, modification_date)
+                            cur.execute("""INSERT INTO file_modifications(path, modification_date) VALUES(?,?)""", (filepath, modification_date))
+                            conn.commit() 
+
+                        else:
+                            for row in data:
+                                db_path = row[1]
+                                db_modification_date = row[2]
+                                if db_path != filepath and db_modification_date != modification_date:
+                                    cur.execute("""INSERT INTO file_modifications(path, modification_date) VALUES(?, ?)""", (filepath, modification_date))
+                                    conn.commit() 
+                            print("1")
+
+                    except FileNotFoundError:
+                        print(f"File not found: {filepath}")
+                            
                 except sqlite3.Error as sql_e:
                     print(f"sqlite error occured: {sql_e}")
                     conn.rollback()
