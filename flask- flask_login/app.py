@@ -1,10 +1,13 @@
-from flask import Flask, flash, render_template, request, url_for, redirect
+from flask import Flask, flash, render_template, url_for, redirect, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user
 from flask_bcrypt import Bcrypt
+from disc_space import storage_graph
+import base64
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite"
 app.config["SECRET_KEY"] = "grafisk_design"
+
 db = SQLAlchemy()
 
 login_manager = LoginManager()
@@ -15,6 +18,7 @@ class Users(UserMixin, db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	username = db.Column(db.String(250), unique=True, nullable=False)
 	password = db.Column(db.String(250), nullable=False)
+
 
 
 db.init_app(app)
@@ -63,7 +67,12 @@ def logout():
 def frontpage():
 	return render_template("base.html")
 
-
+@app.route("/storage")
+def storage():
+	buf = storage_graph()
+	img_str = base64.b64encode(buf.getvalue()).decode('utf-8')
+	return render_template("storage.html", storage_graph_base64=img_str)
+	
 
 
 
