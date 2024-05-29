@@ -21,17 +21,21 @@
             .recent-files-box h3 {
                 font-size: 20px; 
             }
+
         </style>
-        <div class="recent-files-box">
-            <h3>Recent Files</h3>
-            <ul>
-                {% for file in files %}
-                    <li>{{ file }}</li>
-                {% endfor %}
-            </ul>
-        </div>
+            <div>            
+                <img class = "img-fluid mx-auto d-block" src='data:image/png;base64,{{graph}}'/>
+            </div>
+            <div class="container w-100 overflow-scroll rounded" style="background-color: #eee; height: 300px;">
+                <h3>Recent Files</h3>
+                <ul>
+                    {% for file in files %}
+                        <li>{{ file }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
     </div>
-    <img class = "img-fluid float-left" src='data:image/png;base64,{{graph}}'/>
 </body>
 
 {% endblock %}

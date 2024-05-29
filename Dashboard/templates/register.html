@@ -1,26 +1,18 @@
 {% extends 'base.html' %}
 {% block title %}register{% endblock %}
 {% block content %}
-<head>
-	<meta charset="UTF-8" />
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>Sign Up</title>
-	<style>
-	h1 {
-		color: green;
-	}
-	</style>
-</head>
+
 <body>
-	<h1>Create an account</h1>
 	<form action="#" method="post">
-	<label for="username">Username:</label>
-	<input type="text" name="username" />
-	<label for="password">Password:</label>
-	<input type="password" name="password" />
-	<button type="submit">Submit</button>
+		<div class="mb-3 m-4">
+			<label for="username">Username</label>
+			<input type="username" class="form-control" id="username" name="username" placeholder="Enter username" />
+		</div>
+		<div class="mb-3 m-4">
+			<label for="password">Password</label>
+			<input type="password" class="form-control" id="password" name="password" placeholder="Password" />
+		</div>
+		<button type="submit" class="btn btn-primary m-4">Submit</button>
 	</form>
 </body>
-
 {% endblock %}

@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from recent_files import Recent_Files 
 from daily_changes import Daily_Changes
-from disc_space import storage_graph
+from disc_space import Storage
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.sqlite"
@@ -36,7 +36,7 @@ def home():
 
 @app.route("/index")
 def index():
-    recent_file_list = Recent_Files(directory_location, 10)
+    recent_file_list = Recent_Files(directory_location, 100)
     files_returned = recent_file_list.list_recent_files()
 	
     graph = Daily_Changes("C:/GitHub/FirstYearProject/Dashboard/database/daily_filechanges.sqlite", directory_location, 7)
@@ -47,8 +47,15 @@ def index():
 
 @app.route("/storage")
 def storage():
-	pi_chart = storage_graph(directory_location)
-	return render_template('storage.html', pi_chart = pi_chart)
+	log_storage = Daily_Changes("C:/GitHub/FirstYearProject/Dashboard/database/daily_filechanges.sqlite", directory_location, 7)
+	log_storage.log_changes()
+
+	storage_data = Storage("C:/GitHub/FirstYearProject/Dashboard/database/daily_filechanges.sqlite", directory_location)
+
+	pi_chart = storage_data.storage_graph()
+	days_to_full = storage_data.days_to_full()
+
+	return render_template('storage.html', pi_chart = pi_chart, days_to_full = days_to_full)
 
 @app.route('/register', methods=["GET", "POST"])
 def register():
@@ -80,7 +87,7 @@ def login():
 @app.route("/logout")
 def logout():
 	logout_user()
-	return redirect(url_for("home"))
+	return redirect(url_for("login"))
 
 
 if __name__ == '__main__':

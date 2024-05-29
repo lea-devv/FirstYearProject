@@ -1,8 +1,12 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="alert alert-danger" role="alert">
+    Aproximately {{days_to_full}} days till storage is full!
+  </div>
 <div class="container">
-    <h1>Storage Usage</h1>
-    <img class = "img-fluid float-left" src='data:image/png;base64,{{pi_chart}}'/>
+    <h1 class = "text-center">Storage Usage</h1>
+    <img class = "img-fluid mx-auto d-block" src='data:image/png;base64,{{pi_chart}}'/>
 </div>
+
 {% endblock %}

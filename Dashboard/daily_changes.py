@@ -45,12 +45,10 @@ class Daily_Changes:
                 try:
                     m_time = os.path.getmtime(filepath)
                     m_date = datetime.fromtimestamp(m_time).date().isoformat()
-                    file_size = os.path.getsize(filepath)
-                    storage_used_today_B += file_size
-
 
                     if m_date == date_today:
                         files_changed_today += 1
+                        file_size = os.path.getsize(filepath)
                         storage_used_today_B += file_size
 
                 except FileNotFoundError:
@@ -64,7 +62,7 @@ class Daily_Changes:
             cur = conn.cursor()
             print(date_today, files_changed_today, storage_used_today_GB, storage_used_today_B)
             cur.execute("""INSERT INTO daily_change_count(date_today, change_count, storage_used_today_gb) VALUES(?, ?, ?) 
-                        ON CONFLICT(date_today) DO UPDATE SET change_count=excluded.change_count""", 
+                        ON CONFLICT(date_today) DO UPDATE SET change_count=excluded.change_count, storage_used_today_gb=excluded.storage_used_today_gb""", 
                         (date_today, files_changed_today, storage_used_today_GB))
             conn.commit()
             print(f"Logged {files_changed_today} files changed today\n")
