@@ -16,6 +16,7 @@ class Daily_Changes:
 
     def setup_database(self):
         try:
+            print(self.db_directory)
             conn = sqlite3.connect(self.db_directory) 
             cur = conn.cursor()
             cur.execute("""CREATE TABLE IF NOT EXISTS daily_change_count (date_today TEXT PRIMARY KEY, change_count INTEGER NOT NULL);""")

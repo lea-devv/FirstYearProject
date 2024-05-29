@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from recent_files import Recent_Files 
 from daily_changes import Daily_Changes
+from disc_space import storage_graph
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.sqlite"
@@ -36,11 +37,16 @@ def index():
     recent_file_list = Recent_Files("C:/Users/Lau/Music/", 20)
     files_returned = recent_file_list.list_recent_files()
 	
-    graph = Daily_Changes("C:/Users/Lau/Documents/GitHub/FirstYearProject/Dashboard/database/daily_filechanges.sqlite", "C:/Users/Lau/Music/", 7)
+    graph = Daily_Changes("C:/GitHub/FirstYearProject/Dashboard/database/daily_filechanges.sqlite", "C:/Users/lauej/Downloads", 7)
     graph.log_changes()
     graph = graph.daily_changes_graph()
 
     return render_template('index.html', files = files_returned, graph = graph)
+
+@app.route("/storage")
+def storage():
+	pi_chart = storage_graph()
+	return render_template('storage.html', pi_chart = pi_chart)
 
 @app.route('/register', methods=["GET", "POST"])
 def register():
@@ -56,8 +62,6 @@ def register():
 @app.route("/login", methods=["GET", "POST"])
 def login():
 	if request.method == "POST":
-		username = request.form.get("username")
-		password = request.form.get("password")
 		user = Users.query.filter_by(
 			username=request.form.get("username")).first()
 		if user is None:
