@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>Storage Usage</h1>
+    <img src="data:image/png;base64,{{ storage_graph_base64 }}" alt="Storage Graph">
+</div>
+{% endblock %}
