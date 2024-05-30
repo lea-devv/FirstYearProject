@@ -1,5 +1,5 @@
 from flask import Flask, flash, render_template, request, url_for, redirect
-from flask_login import LoginManager, UserMixin, login_user, logout_user
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from recent_files import Recent_Files 
@@ -11,7 +11,11 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.sqlite"
 app.config["SECRET_KEY"] = "grafisk_design"
 db = SQLAlchemy()
 
-directory_location = ("C:/Users/lauej/Downloads")
+#directory_location = ("D:/GrafiskDesign")
+#filechange_db_location = ("C:/Users/Administrator/Desktop/Dashboard/database/daily_filechanges.sqlite")
+
+directory_location = ("C:/Users/Lau/Music")
+filechange_db_location = ("C:/Users/Lau/Documents/GitHub/FirstYearProject/Dashboard/database/daily_filechanges.sqlite")
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -32,25 +36,27 @@ def loader_user(user_id):
 
 @app.route("/")
 def home():
-	return render_template("authentication.html")
+	return redirect(url_for("login"))
 
 @app.route("/index")
+@login_required
 def index():
     recent_file_list = Recent_Files(directory_location, 100)
     files_returned = recent_file_list.list_recent_files()
 	
-    graph = Daily_Changes("C:/GitHub/FirstYearProject/Dashboard/database/daily_filechanges.sqlite", directory_location, 7)
+    graph = Daily_Changes(filechange_db_location, directory_location, 7)
     graph.log_changes()
     graph = graph.daily_changes_graph()
 
     return render_template('index.html', files = files_returned, graph = graph)
 
 @app.route("/storage")
+@login_required
 def storage():
-	log_storage = Daily_Changes("C:/GitHub/FirstYearProject/Dashboard/database/daily_filechanges.sqlite", directory_location, 7)
+	log_storage = Daily_Changes(filechange_db_location, directory_location, 7)
 	log_storage.log_changes()
 
-	storage_data = Storage("C:/GitHub/FirstYearProject/Dashboard/database/daily_filechanges.sqlite", directory_location)
+	storage_data = Storage(filechange_db_location, directory_location)
 
 	pi_chart = storage_data.storage_graph()
 	days_to_full = storage_data.days_to_full()
@@ -58,6 +64,7 @@ def storage():
 	return render_template('storage.html', pi_chart = pi_chart, days_to_full = days_to_full)
 
 @app.route('/register', methods=["GET", "POST"])
+@login_required
 def register():
 	if request.method == "POST":
 		hashed_password = bcrypt.generate_password_hash(request.form.get("password")).decode('utf-8')
@@ -83,12 +90,18 @@ def login():
 			flash('Incorrect username or password')
 	return render_template("login.html")
 
+@app.route("/authentication")
+def authentication():
+	return render_template("authentication.html")
 
 @app.route("/logout")
 def logout():
 	logout_user()
-	return redirect(url_for("login"))
+	return redirect(url_for("authentication"))
 
+@app.errorhandler(401)
+def page_not_found(e):
+    return redirect(url_for("authentication"))
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -6,8 +6,6 @@ import sqlite3
 import base64
 import os
 
-########################################################################################
-
 class Daily_Changes:
     def __init__(self, db_directory, file_directory , graph_age):
         self.db_directory = db_directory
@@ -34,7 +32,6 @@ class Daily_Changes:
         date_today = datetime.now().date().isoformat()
         self.setup_database()
         files_changed_today = 0
-        #Stored in bytes
         storage_used_today_B = 0
         storage_used_today_GB = 0
 
@@ -55,17 +52,14 @@ class Daily_Changes:
                     print(f"File not found: {filepath}")
 
         storage_used_today_GB = storage_used_today_B / (1024 * 1024 * 1024)
-        
 
         try:
             conn = sqlite3.connect(self.db_directory)
             cur = conn.cursor()
-            print(date_today, files_changed_today, storage_used_today_GB, storage_used_today_B)
             cur.execute("""INSERT INTO daily_change_count(date_today, change_count, storage_used_today_gb) VALUES(?, ?, ?) 
                         ON CONFLICT(date_today) DO UPDATE SET change_count=excluded.change_count, storage_used_today_gb=excluded.storage_used_today_gb""", 
                         (date_today, files_changed_today, storage_used_today_GB))
             conn.commit()
-            print(f"Logged {files_changed_today} files changed today\n")
 
         except sqlite3.Error as sql_e:
             print(f"sqlite error occured: {sql_e}")
