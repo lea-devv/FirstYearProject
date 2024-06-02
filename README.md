@@ -3,4 +3,4 @@ However, feel free to take inpiration from the code.
 
 **Til undervisere**
 
-Det nuværende stadie af koden d. 2 juni ligger som et realese (Gruppe2A1-ExamCode) med version 1.0.0 og som svarer overens med kode beskrevet i vores rapport.
+Det nuværende stadie af koden d. 2 juni ligger som en release (Gruppe2A1-ExamCode) med version 1.0.0 og som svarer overens med kode beskrevet i vores rapport.
